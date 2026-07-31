@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groza Win Probability Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .calculator {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+            border: 3px solid #f59e0b;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .breakdown {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .breakdown-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-name {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stat-points {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .points-0 {
+            background: #fee;
+            color: #c33;
+        }
+        
+        .points-1 {
+            background: #fef08a;
+            color: #854d0e;
+        }
+        
+        .points-2 {
+            background: #bbf7d0;
+            color: #166534;
+        }
+        
+        .verdict-header {
+            font-weight: 700;
+            margin-bottom: 15px;
+            margin-top: 30px;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .verdict {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .verdict em {
+            font-weight: normal;
+            font-style: italic;
+        }
+        
+        .verdict-elite {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .verdict-strong {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+        
+        .verdict-viable {
+            background: #fff3e0;
+            color: #f57c00;
+            border: 2px solid #f57c00;
+        }
+        
+        .verdict-unlikely {
+            background: #fee;
+            color: #c33;
+            border: 2px solid #c33;
+        }
+        
+        .verdict-goat {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 3px solid #f59e0b;
+            font-size: 16px;
+        }
+        
+        .verdict-note {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .reset-button {
+            width: 100%;
+            padding: 12px;
+            background: #c33;
+            color: white;
+            border: 2px solid #c33;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .reset-button:hover {
+            background: #a02;
+            border-color: #a02;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Groza Win Probability Calculator</h1>
+        <p class="subtitle">Enter a kicker's season stats to see the likelihood they'll win college football's top placekicking prize.</p>
+        
+        <div class="input-group">
+            <label for="fgPct">Overall FG%</label>
+            <input type="number" id="fgPct" placeholder="e.g., 90.5" step="0.1" min="0" max="100">
+        </div>
+        
+        <div class="input-group">
+            <label for="fgm">Field Goals Made (Total)</label>
+            <input type="number" id="fgm" placeholder="e.g., 22" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label for="fgm50">Field Goals Made from 50+ Yards</label>
+            <input type="number" id="fgm50" placeholder="e.g., 3" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label for="long">Longest Field Goal (in Yards)</label>
+            <input type="number" id="long" placeholder="e.g., 56" min="0">
+        </div>
+        
+        <div class="input-group">
+            <label for="fgmpg">Field Goals Made Per Game (FGMPG)</label>
+            <input type="number" id="fgmpg" placeholder="e.g., 1.8" step="0.1" min="0">
+        </div>
+        
+        <div class="score-display">
+            <div class="score-number" id="totalScore">0</div>
+            <div class="score-label">out of 10 possible Groza points</div>
+        </div>
+        
+        <div class="verdict-header">Could This Kicker Win The Groza?</div>
+        <div class="verdict" id="verdict"></div>
+        <div class="verdict-note" id="verdictNote"></div>
+        
+        <div class="breakdown">
+            <div class="breakdown-title">Score Breakdown</div>
+            <div class="stat-row">
+                <span class="stat-name">Overall FG%</span>
+                <span class="stat-points points-0" id="fgPctPoints">0 pts</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">Field Goals Made</span>
+                <span class="stat-points points-0" id="fgmPoints">0 pts</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">FGM from 50+</span>
+                <span class="stat-points points-0" id="fgm50Points">0 pts</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">Longest FG</span>
+                <span class="stat-points points-0" id="longPoints">0 pts</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">FGM Per Game</span>
+                <span class="stat-points points-0" id="fgmpgPoints">0 pts</span>
+            </div>
+        </div>
+        
+        <button class="reset-button" onclick="resetCalculator()">Reset Calculator</button>
+    </div>
+    
+    <script>
+        const thresholds = {
+            fgPct: { min: 81.8, ideal: 91.46 },
+            fgm: { min: 15, ideal: 24 },
+            fgm50: { min: 1, ideal: 2 },
+            long: { min: 47, ideal: 55 },
+            fgmpg: { min: 1.1, ideal: 1.79 }
+        };
+        
+        function calculatePoints(value, min, ideal) {
+            if (value === '' || value === null) return 0;
+            const num = parseFloat(value);
+            if (num < min) return 0;
+            if (num >= ideal) return 2;
+            return 1;
+        }
+        
+        function updateScore() {
+            const fgPct = document.getElementById('fgPct').value;
+            const fgm = document.getElementById('fgm').value;
+            const fgm50 = document.getElementById('fgm50').value;
+            const long = document.getElementById('long').value;
+            const fgmpg = document.getElementById('fgmpg').value;
+            
+            const points = {
+                fgPct: calculatePoints(fgPct, thresholds.fgPct.min, thresholds.fgPct.ideal),
+                fgm: calculatePoints(fgm, thresholds.fgm.min, thresholds.fgm.ideal),
+                fgm50: calculatePoints(fgm50, thresholds.fgm50.min, thresholds.fgm50.ideal),
+                long: calculatePoints(long, thresholds.long.min, thresholds.long.ideal),
+                fgmpg: calculatePoints(fgmpg, thresholds.fgmpg.min, thresholds.fgmpg.ideal)
+            };
+            
+            const total = Object.values(points).reduce((a, b) => a + b, 0);
+            
+            // Update display
+            document.getElementById('totalScore').textContent = total;
+            
+            // Update breakdown
+            updateBreakdownRow('fgPctPoints', points.fgPct);
+            updateBreakdownRow('fgmPoints', points.fgm);
+            updateBreakdownRow('fgm50Points', points.fgm50);
+            updateBreakdownRow('longPoints', points.long);
+            updateBreakdownRow('fgmpgPoints', points.fgmpg);
+            
+            // Update verdict
+            updateVerdict(total);
+        }
+        
+        function updateBreakdownRow(id, points) {
+            const element = document.getElementById(id);
+            element.textContent = points + ' pt' + (points !== 1 ? 's' : '');
+            element.className = 'stat-points points-' + points;
+        }
+        
+        function updateVerdict(score) {
+            const verdictEl = document.getElementById('verdict');
+            const noteEl = document.getElementById('verdictNote');
+            
+            if (score === 10) {
+                verdictEl.innerHTML = '<strong>🏆 GOAT Status / Unprecedented Territory</strong><br>Win Probability: Never happened before<br>Unless it\'s an insane year for kickers, winning is just about guaranteed';
+                verdictEl.className = 'verdict verdict-goat';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score >= 9) {
+                verdictEl.innerHTML = '<strong>🎯 Elite Tier</strong><br>Win Probability: 100%<br>Heavy favorite — if you outpace the field, historically unbeatable';
+                verdictEl.className = 'verdict verdict-elite';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score === 8) {
+                verdictEl.innerHTML = '<strong>⚡ Strong Contender</strong><br>Win Probability: 50%<br>In the mix, but it\'s often a crowded field';
+                verdictEl.className = 'verdict verdict-strong';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score === 7) {
+                verdictEl.innerHTML = '<strong>⚠️ Viable but Unlikely</strong><br>Win Probability: 0%<br>Would need tiebreakers or weak competition';
+                verdictEl.className = 'verdict verdict-viable';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score === 6) {
+                verdictEl.innerHTML = '<strong>⚠️ Longshot</strong><br>Win Probability: 16.7%<br>Rarely wins as clear statistical leader';
+                verdictEl.className = 'verdict verdict-viable';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score === 5) {
+                verdictEl.innerHTML = '<strong>❌ Severe Longshot</strong><br>Win Probability: 0%<br>Two kickers have won with this many Groza Points, but both were outscored by non-winners';
+                verdictEl.className = 'verdict verdict-unlikely';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else if (score > 0) {
+                verdictEl.innerHTML = '<strong>❌ Non-Competitive</strong><br>Win Probability: 0%<br>Below historical minimums';
+                verdictEl.className = 'verdict verdict-unlikely';
+                noteEl.textContent = '*win probability calculated off of years with a clear Groza Points leader';
+            } else {
+                verdictEl.innerHTML = '<em>[Enter stats above to calculate score and win probability]</em>';
+                verdictEl.className = 'verdict';
+                noteEl.textContent = '';
+            }
+        }
+        
+        function resetCalculator() {
+            document.getElementById('fgPct').value = '';
+            document.getElementById('fgm').value = '';
+            document.getElementById('fgm50').value = '';
+            document.getElementById('long').value = '';
+            document.getElementById('fgmpg').value = '';
+            updateScore();
+        }
+        
+        // Add event listeners
+        const inputs = ['fgPct', 'fgm', 'fgm50', 'long', 'fgmpg'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', updateScore);
+        });
+        
+        // Initialize
+        updateVerdict(0);
+    </script>
+</body>
+</html>
